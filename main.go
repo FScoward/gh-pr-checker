@@ -4,17 +4,24 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/google/go-github/v43/github"
+	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 )
 
 func main() {
-	fmt.Println("Hello")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	ghAccessToken := os.Getenv("GH_ACCESS_TOKEN")
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: "... your access token ..."},
+		&oauth2.Token{AccessToken: ghAccessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
@@ -25,5 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Print(repos)
+	for i, v := range repos {
+		fmt.Println(i, v.GetFullName())
+	}
 }
